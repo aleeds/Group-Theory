@@ -87,21 +87,21 @@ def Inverse(x):
     return ''.join([InverseChar(r) for r in rx])
 
 # Defines Aut for one character words
-
-
 def WhiteheadAutG(x, Z, y):
-    if (InverseChar(y) == x):
-        return Inverse(WhiteheadAutG(x, Z, Inverse(y)))
-    if (y == x):
+    if Inverse(y) == x:
+        return y;
+    elif y == x:
         return x
-    elif (not cont(y, Z) and not cont(InverseChar(y), Z)):
+    elif y not in Z and Inverse(y) not in Z:
         return y
-    elif (cont(y, Z) and not cont(InverseChar(y), Z)):
+    elif y in Z and Inverse(y) not in Z:
         return x + y
-    elif (not cont(y, Z) and cont(InverseChar(y), Z)):
+    elif y not in Z and Inverse(y) in Z:
         return y + InverseChar(x)
-    else:
+    elif y in Z and Inverse(y) in Z:
         return x + y + InverseChar(x)
+    else:
+        raise("Some how didn't pass cases")
 
 
 def PowerSet(elems):
@@ -320,3 +320,53 @@ def DrawGraphForWords(words):
     G.add_edges_from(g)
     nx.draw_networkx_nodes(G)
     plt.show()
+
+def EdgeHasVert(edge,vert):
+    return edge[0] == vert or edge[1] == vert
+
+def GetComplement(graph,Z):
+    s = ""
+    for (a,b) in graph:
+        s += a
+        s += b
+    gens = GetGens(s)
+    ret = []
+    for i in gens:
+        if i not in Z:
+            ret.append(i)
+        if InverseChar(i) not in Z:
+            ret.append(InverseChar(i))
+
+    return GetUniques(ret)
+
+def NumEdgesFromZToZC(graph,Z):
+    ZC = GetComplement(graph,Z)
+    c = 0
+    for (a,b) in graph:
+        if a in Z and b in ZC: c += 1
+        elif a in ZC and b in Z: c += 1
+    return c
+
+def NotAttached(word,g):
+    ret = []
+    genst = GetGens(word)
+    gens = []
+    for i in genst:
+      gens.append(i)
+      gens.append(InverseChar(i))
+    G = WhiteheadGraph(word)
+    non = []
+    for gen in gens:
+        t = False
+        for (a,b) in G:
+            t = t or ((a == gen and b == g) or (b == gen and a == g))
+        if not t and gen != g:
+            non.append(gen)
+    return non
+
+def Valence(graph,vert):
+    c = 0
+    for i in [EdgeHasVert(k,vert) for k in graph]:
+        if i:
+          c += 1
+    return c
