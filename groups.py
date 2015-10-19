@@ -370,3 +370,17 @@ def Valence(graph,vert):
         if i:
           c += 1
     return c
+
+def ApplyGenAutGen(g,aut):
+    for (a,b) in aut:
+        if (a == g):
+            return b
+        elif (Inverse(a) == g):
+            return Inverse(b)
+def ApplyGenAut(w,aut):
+    ret = ""
+    for i in w:
+        print(ret)
+        print(ApplyGenAutGen(i,aut))
+        ret = add(ret,ApplyGenAutGen(i,aut))
+    return ret
