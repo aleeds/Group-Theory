@@ -28,8 +28,7 @@ def WhiteheadGraphList(sl):
     ret = []
     for s in sl:
         for i in WhiteheadGraph(s):
-            if (not cont(i, ret)):
-                ret.append(i)
+            ret.append(i)
     return ret
 
 # gets the valence of x in Whit
@@ -155,6 +154,44 @@ def ReduceToBottom(word, gens):
         h = t
     return ret
 
+def LargestValence(words,generators):
+    graph = WhiteheadGraphList(words)
+    counts = {g : 0 for g in generators}
+    for (a,b) in graph:
+        counts[a] += 1
+        counts[b] += 1
+
+    max_gen = generators[0]
+    max_count = counts[max_gen]
+    for gen,count in counts.items():
+       if max_count < count:
+           max_gen = gen
+           max_count = count
+    return max_gen
+
+def ReduceWhiteheadGraph(words):
+    import random
+    generators = GetGens(words)
+    generators = generators + [Inverse(g) for g in generators]
+    gen = LargestValence(words,generators)
+    graph = WhiteheadGraphList(words)
+    Z = [gen]
+    cur_min = NumEdgesFromZToZC(graph,Z)
+    for i in generators:
+        print(i)
+        if i not in Z and i != Inverse(gen):
+            Z.append(i)
+            print(Z)
+            cur = NumEdgesFromZToZC(graph,Z)
+            if cur < cur_min:
+                cur_min = cur
+            else:
+                Z.pop()
+    print(Z)
+    return [WhiteheadAut(word,(gen,Z)) for word in words]
+
+
+
 def GetUniques(ls):
     ret = []
     for i in ls:
@@ -190,10 +227,16 @@ def GenerateAllWhiteheadAuts(gens):
     return ret
 
 
-# Applies whitehead automorphism Aut to x
-def WhiteheadAut(x, Aut):
-    return ApplyWhiteAut(Aut[0], Aut[1], x)
+def CyclicallyReduce(word):
+    if word[0] != Inverse(word[-1]):
+        return word
+    else:
+         return CyclicallyReduce(word[1:(len(word) - 1)])
 
+# Applies whitehead automorphism Aut to x, and cyclically reduces is.
+def WhiteheadAut(x, Aut):
+    word = ApplyWhiteAut(Aut[0], Aut[1], x)
+    return CyclicallyReduce(word)
 # Applies the automorphism which switches gen and its inverse
 
 
