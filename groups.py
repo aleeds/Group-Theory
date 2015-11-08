@@ -423,13 +423,16 @@ def ApplyGenAutGen(g,aut):
             return b
         elif (Inverse(a) == g):
             return Inverse(b)
+
 def ApplyGenAut(w,aut):
     ret = ""
     for i in w:
         ret = add(ret,ApplyGenAutGen(i,aut))
     return ret
 
-
+# right now uses model for complexity wherein it is based off of the whitehead
+# graph of the words that the gens get sent to. What kind of complexity should
+# be used? With the choice of the proper complexity, it will be trivial
 def ComplexityAut(aut):
     print(aut)
     words = [b for (a,b) in aut]
@@ -441,6 +444,11 @@ def ComplexityAut(aut):
         com += Valence(graph,i)
     return com
 
+def ComplexityAutTwo(aut):
+    return sum([len(b) for (a,b) in aut])
+
+
+
 def EnforceGoodForm(aut):
     ret = []
     for (a,b) in aut:
@@ -450,6 +458,8 @@ def EnforceGoodForm(aut):
             ret.append((a,b))
     return ret
 
+# The use of NumEdgesFromZToZC here implicitly assigns the complexity to be the
+# whitehead graph complexity
 def ReduceWithInners(aut,gens):
     words = [b for (a,b) in aut]
     for g in gens:
@@ -468,5 +478,29 @@ def ReduceWithInners(aut,gens):
         if num < h:
             print((g,Z))
             return ReduceWithInners([(a,WhiteheadAut(b,(g,Z))) for (a,b) in aut],gens)
+
+    return EnforceGoodForm(aut)
+
+def ModAut(aut,Whitehead):
+    return [(a,WhiteheadAut(b,Whitehead)) for (a,b) in aut]
+
+def ReduceWithInnersLen(aut,gens):
+    words = [b for (a,b) in aut]
+    for g in gens:
+        Z = [g]
+        white_graph = WhiteheadGraphList(words)
+        num = ComplexityAutTwo(aut)
+        h = num
+        for i in gens:
+            if i != g and i != Inverse(g):
+                Z_two = Z.copy()
+                Z_two = Z_two + [i,Inverse(i)]
+                num_two = ComplexityAutTwo(ModAut(aut,(g,Z_two)))
+                if num_two < num:
+                    Z = Z_two
+                    num = num_two
+        if num < h:
+            print((g,Z))
+            return ReduceWithInnersLen([(a,WhiteheadAut(b,(g,Z))) for (a,b) in aut],gens)
 
     return EnforceGoodForm(aut)
