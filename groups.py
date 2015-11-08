@@ -4,6 +4,7 @@ from graphs import GraphEquality
 
 
 def WhiteheadGraph(s):
+    s = CyclicallyReduce(s)
     ret = []
     for i in range(0, len(s)):
         r = (InverseChar(s[i]), s[(i + 1) % len(s)])
@@ -27,6 +28,7 @@ def GetGens(words):
 def WhiteheadGraphList(sl):
     ret = []
     for s in sl:
+        s = CyclicallyReduce(s)
         for i in WhiteheadGraph(s):
             ret.append(i)
     return ret
@@ -236,7 +238,8 @@ def CyclicallyReduce(word):
 # Applies whitehead automorphism Aut to x, and cyclically reduces is.
 def WhiteheadAut(x, Aut):
     word = ApplyWhiteAut(Aut[0], Aut[1], x)
-    return CyclicallyReduce(word)
+    #need to CyclicallyReduce?
+    return word
 # Applies the automorphism which switches gen and its inverse
 
 
