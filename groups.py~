@@ -423,47 +423,8 @@ def ApplyGenAutGen(g,aut):
 def ApplyGenAut(w,aut):
     ret = ""
     for i in w:
+
+        #print(ret)
+        print(ApplyGenAutGen(i,aut))
         ret = add(ret,ApplyGenAutGen(i,aut))
     return ret
-
-
-def ComplexityAut(aut):
-    print(aut)
-    words = [b for (a,b) in aut]
-    gens = [a for (a,b) in aut]
-    gens = gens + [Inverse(g) for g in gens]
-    graph = WhiteheadGraphList(words)
-    com = 0
-    for i in gens:
-        com += Valence(graph,i)
-    return com
-
-def EnforceGoodForm(aut):
-    ret = []
-    for (a,b) in aut:
-        if b[0] != a:
-            ret.append((Inverse(a),Inverse(b)))
-        else:
-            ret.append((a,b))
-    return ret
-
-def ReduceWithInners(aut,gens):
-    words = [b for (a,b) in aut]
-    for g in gens:
-        Z = [g]
-        white_graph = WhiteheadGraphList(words)
-        num = NumEdgesFromZToZC(white_graph,Z)
-        h = num
-        for i in gens:
-            if i != g and i != Inverse(g):
-                Z_two = Z.copy()
-                Z_two = Z_two + [i,Inverse(i)]
-                num_two = NumEdgesFromZToZC(white_graph,Z_two)
-                if num_two < num:
-                    Z = Z_two
-                    num = num_two
-        if num < h:
-            print((g,Z))
-            return ReduceWithInners([(a,WhiteheadAut(b,(g,Z))) for (a,b) in aut],gens)
-
-    return EnforceGoodForm(aut)
