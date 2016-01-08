@@ -20,6 +20,7 @@ def GetGens(words):
         for q in word:
             if (q.lower() not in gens):
                 gens.append(q.lower())
+                gens.append(q.upper())
     return gens
 
 # Produces WhiteheadGraph for words sl
@@ -90,7 +91,7 @@ def Inverse(x):
 # Defines Aut for one character words
 def WhiteheadAutG(x, Z, y):
     if Inverse(y) == x:
-        return y;
+        return y
     elif y == x:
         return x
     elif y not in Z and Inverse(y) not in Z:
@@ -235,13 +236,21 @@ def CyclicallyReduce(word):
     else:
          return CyclicallyReduce(word[1:(len(word) - 1)])
 
-# Applies whitehead automorphism Aut to x, and cyclically reduces is.
+# Applies whitehead automorphism Aut to x
 def WhiteheadAut(x, Aut):
     word = ApplyWhiteAut(Aut[0], Aut[1], x)
     #need to CyclicallyReduce?
     return word
 # Applies the automorphism which switches gen and its inverse
 
+def GensFromGraph(graph):
+    gens = []
+    for (a,b) in graph:
+        if a not in gens:
+            gens += a
+        if b not in gens:
+            gens += b
+    return gens
 
 def ApplyInverseAut(word, gen):
     ret = ""
