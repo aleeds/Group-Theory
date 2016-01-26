@@ -172,28 +172,53 @@ def LargestValence(words,generators):
            max_count = count
     return max_gen
 
+
 def ReduceWhiteheadGraph(words):
-    import random
     generators = GetGens(words)
-    generators = generators + [Inverse(g) for g in generators]
     gen = LargestValence(words,generators)
+    print(gen)
     graph = WhiteheadGraphList(words)
     Z = [gen]
     cur_min = NumEdgesFromZToZC(graph,Z)
     for i in generators:
-        print(i)
         if i not in Z and i != Inverse(gen):
             Z.append(i)
-            print(Z)
             cur = NumEdgesFromZToZC(graph,Z)
             if cur < cur_min:
                 cur_min = cur
             else:
                 Z.pop()
-    print(Z)
-    return [WhiteheadAut(word,(gen,Z)) for word in words]
+    return [CyclicallyReduce(WhiteheadAut(word,(gen,Z))) for word in words]
 
+def ReduceWhiteheadGraphWord(word):
+    gens = GetGens(word)
+    for x in gens:
+        Z = [x]
+        cur_min = NumEdgesFromZToZC(graph,Z)
+        for i in gens:
+            graph = WhiteheadGraph(word)
 
+            if i not in Z and i != Inverse(gen):
+                Z += i
+                cur
+
+def ReduceFullyWord(word):
+    complexity = len(word)
+    complexity_prev = complexity + 1
+    while complexity_prev > complexity:
+        word = ReduceWhiteheadGraphWord(word)
+        complexity_prev = complexity
+        complexity = len(word)
+    return word
+
+def ReduceFully(words):
+    complexity = sum([len(word) for word in words])
+    complexity_prev = complexity + 1
+    while complexity_prev > complexity:
+        words = ReduceWhiteheadGraph(words)
+        complexity_prev = complexity
+        complexity = sum([len(word) for word in words])
+    return words
 
 def GetUniques(ls):
     ret = []

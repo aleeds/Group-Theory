@@ -56,10 +56,4 @@ def WhiteheadSingle(word):
 
 def WhiteheadWords(words):
     gens = GetGens(words)
-    i = 0
-    gensP = PowerSet(gens)
-    print(len(gensP))
-    for genset in gensP:
-        if WhiteheadAlgorithm(words,gens):
-            return True
-    return False
+    
